@@ -33,6 +33,8 @@ app = Flask(__name__)
 # Flask Routes
 #################################################
 
+# =======================================================================
+# index route
 @app.route("/")
 def welcome():
     """List all available api routes."""
@@ -41,10 +43,12 @@ def welcome():
         f"/api/v1.0/precipitaion<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/temp/start/end"
+        f"/api/v1.0/start<br/>"
+        f"/api/v1.0/start/end"
     )
 
-
+# =======================================================================
+# precipitaion route
 @app.route("/api/v1.0/precipitaion")
 def precipitaion():
 
@@ -68,7 +72,8 @@ def precipitaion():
     return jsonify(all_prec)
 
 
-
+# =======================================================================
+# stations route
 @app.route("/api/v1.0/stations")
 def stations():
 
@@ -88,7 +93,8 @@ def stations():
 
     return jsonify(all_stations)
 
-
+# =======================================================================
+# tobs route
 @app.route("/api/v1.0/tobs")
 def tobs():
 
@@ -112,6 +118,70 @@ def tobs():
 
     return jsonify(all_tobs)
 
+# =======================================================================
+# temp_start route
+@app.route("/api/v1.0/<start_dt>")
+def temp_start(start_dt):
 
+    # Create our session (link) from Python to the DB
+    session = Session(engine)
+
+    # Perform a query to retrieve the data and precipitation scores
+    tobs_db = session.query(func.min(Measurement.tobs).label("tmin"),\
+                            func.avg(Measurement.tobs).label("tavg"),\
+                            func.max(Measurement.tobs).label("tmax"))\
+                            .filter(Measurement.date >= start_dt)\
+                            .all()
+
+    # Close session after read
+    session.close()
+
+     # Create a dictionary of summary temperatures and append to a list 
+    all_tobs = []
+    for tmin, tavg, tmax in tobs_db:
+        tobs_dict = {}
+        tobs_dict["TMIN"] = tmin
+        tobs_dict["TAVG"] = tavg
+        tobs_dict["TMAX"] = tmax
+        all_tobs.append(tobs_dict) 
+
+    return jsonify(all_tobs)
+
+# =======================================================================
+# temp_start_end route
+@app.route("/api/v1.0/<start_dt>/<end_dt>")
+def temp_start_end(start_dt, end_dt):
+
+    # print the start and end dates
+    #start_dt = start_end_dt[:10]
+    #end_dt = start_end_dt[-10:]
+
+    # Create our session (link) from Python to the DB
+    session = Session(engine)
+
+    # Perform a query to retrieve the data and precipitation scores
+    tobs_db = session.query(func.min(Measurement.tobs).label("tmin"),\
+                            func.avg(Measurement.tobs).label("tavg"),\
+                            func.max(Measurement.tobs).label("tmax"))\
+                            .filter(Measurement.date >= start_dt)\
+                            .filter(Measurement.date <= end_dt)\
+                            .all()
+
+    # Close session after read
+    session.close()
+
+     # Create a dictionary of summary temperatures and append to a list
+    all_tobs = []
+    for tmin, tavg, tmax in tobs_db:
+        tobs_dict = {}
+        tobs_dict["TMIN"] = tmin
+        tobs_dict["TAVG"] = tavg
+        tobs_dict["TMAX"] = tmax
+        all_tobs.append(tobs_dict) 
+
+    return jsonify(all_tobs)
+
+# =======================================================================
+# the main program
 if __name__ == '__main__':
     app.run(debug=True)
