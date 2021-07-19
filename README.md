@@ -10,7 +10,7 @@ sqlalchemy-challenge Assignment - Milinda 'ML' Liyanage
 
 ### The following steps were done for the first section, precipitation & station analysis: 
 
-* Started from the jupyter notebook provided. [climate_starter](climate.ipynb)
+* Started from the jupyter notebook provided. [climate](climate.ipynb)
 * Created a connection to the SQLite database.
 * Identified the tables and their columns in database.
 * Read the data and answered the questions in the assignment about precipitation & weather stations.
@@ -28,4 +28,22 @@ sqlalchemy-challenge Assignment - Milinda 'ML' Liyanage
 
 ### Temperature Analysis I
 
+#### Modified the starter [temp_analysis_bonus_1](temp_analysis_bonus_1.ipynb) file and did the following;
+* After reading the measurement data the date string column was converted to date type column.
+* Then the date was set as the index.
+* Added a new column day, and the date column was dropped.
+* Two new data frames were created for June and December temperature observations, 30 days per month.
+* Mean temperature for both data sets were identified.
+* Create two average value data set, grouping by day.
+* Using the two grouped data sets, ran a paired t-test.
+* Results of the t-test had pvalue of 6.06 e-16.
+
+#### Analysis
+* The null hypotheses: the true mean difference is equal to zero for June and December temperature observations.
+* Alternative hypotheses: the true mean difference is not equal to zero.
+
+* As the p-value is very small the null hypothesis cannot be supported. Therefore, there is a difference between June and December temperature observations.
+
 ### Temperature Analysis II
+
+* not attempted
